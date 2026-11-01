@@ -1,0 +1,10 @@
+export function templates(today: string): Record<string, string> {
+  return {
+    "attendance.js": `// Attendance workspace · local API\n// Read, validate, and inspect your selected period.\n\nconst records = await attendance.load();\nconsole.info("Loaded attendance records", records.length);\n\nconst validation = await attendance.validate(records);\nconsole.log("Validation", validation);\n\nconst report = await attendance.report();\nconsole.success("Attendance report", report);\n\n// Open attendance-editor.js to update a record.\n// All panels share the same local database.\n`,
+    "employee.js": `// Employee configuration\nconst employee = await employeeService.get();\nconsole.log("Employee", employee);\n\n// To change identity, use Settings or uncomment:\n// await employeeService.update({\n//   name: "ANDIKA PRAMUDYA",\n//   id: "DEMO-001",\n//   position: "ACCOUNT RECEIVABLE OFFICER",\n//   branch: "Mandiri Utama Finance"\n// });\n`,
+    "validator.js": `// Validate every record in the selected period.\nconst records = await attendance.load();\nconst result = await attendance.validate(records);\nconsole.log("Validation results", result);\n\nif (result.valid) {\n  console.success("All attendance records are valid.");\n} else {\n  console.warn("Review the reported errors.", result.errors);\n}\n`,
+    "time-calculator.js": `// Working hours and overtime (over 8 hours/day).\nconst records = await attendance.load();\nfor (const record of records) {\n  const time = await attendance.calculate(record);\n  console.log(record.attendance_date, time);\n}\nconst report = await attendance.report();\nconsole.success("Period totals", report);\n`,
+    "attendance-editor.js": `// Edit today's attendance, then run this file.\n// Use YYYY-MM-DD and 24-hour HH:MM.\n\nconst updated = await attendanceEditor.update({\n  date: "${today}",\n  checkIn: "07:36",\n  checkOut: "19:55",\n  shift: "Regular Cabang Office Hour",\n  notes: "PRS · HK · EAI"\n});\n\nconsole.success("Record saved", updated);\n// Dashboard, records, and inspector update instantly.\n`,
+    "attendance-data.json": "[]",
+  };
+}
