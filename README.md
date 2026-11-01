@@ -16,6 +16,7 @@ Buka URL lokal yang dicetak Vite (default `http://127.0.0.1:5173`).
 ```sh
 pnpm test       # Validasi, interpreter, perhitungan, dan persistensi IndexedDB
 pnpm build      # Pemeriksaan TypeScript + build produksi ke dist/
+pnpm verify:build # Memastikan HTML produksi memuat bundle JS/CSS yang tersedia
 pnpm preview    # Preview build produksi
 ```
 
@@ -75,7 +76,9 @@ Desktop: Dashboard 29%, konsol 71%. Drag pemisah editor/inspector atau terminal 
 
 ## GitHub Pages
 
-`base: './'` memakai aset relatif. Seluruh navigasi internal memakai state React sehingga tidak memerlukan server route fallback. Workflow `.github/workflows/pages.yml` otomatis menguji dan membangun setiap push ke `main`, lalu menyimpan artifact produksi. Deployment Pages hanya berjalan saat workflow dijalankan manual. Aktifkan **Settings → Pages → Source: GitHub Actions** di repository sebelum menjalankan deployment manual. Tidak ada publikasi website yang dilakukan saat implementasi ini.
+Seluruh navigasi internal memakai state React sehingga tidak memerlukan server route fallback. Workflow `.github/workflows/pages.yml` otomatis menguji, membangun, memverifikasi bundle, dan menerbitkan isi `dist/` pada setiap push ke `main`. Workflow juga dapat dijalankan manual. Pengaturan **Settings → Pages → Source** harus menggunakan **GitHub Actions**.
+
+Workflow membaca path Pages dari `actions/configure-pages` dan meneruskannya melalui `VITE_BASE_PATH`, sehingga URL aset produksi menggunakan subpath repository yang benar (misalnya `/Greatday-HR/assets/…`). Build lokal tetap menggunakan aset relatif `./` saat variabel ini tidak diisi. Jangan menerbitkan root source repository melalui Jekyll: file `index.html` sumber menunjuk ke `src/main.tsx` yang perlu dikompilasi oleh Vite.
 
 Untuk hosting statis lain, unggah isi `dist/`. Gunakan HTTP/HTTPS; jangan membuka `index.html` langsung melalui `file://`.
 

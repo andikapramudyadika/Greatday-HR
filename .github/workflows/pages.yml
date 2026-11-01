@@ -22,21 +22,25 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
-      - run: pnpm build
+      - name: Build for GitHub Pages
+        run: pnpm build
+        env:
+          VITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}/
+      - name: Verify production entry points
+        run: pnpm verify:build
       - uses: actions/upload-artifact@v4
         with:
           name: production-build
           path: dist
-      - uses: actions/configure-pages@v5
-        if: github.event_name == 'workflow_dispatch'
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name == 'workflow_dispatch'
         with:
           path: dist
   deploy:
-    if: github.event_name == 'workflow_dispatch'
     needs: build
     runs-on: ubuntu-latest
     environment:
